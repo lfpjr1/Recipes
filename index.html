@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Recipe Book</title>
+    <style>
+        :root {
+            --primary: #e05638;
+            --bg: #f8f6f0;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --accent: #edf2f7;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Hide content until password is verified */
+        #protected-content {
+            display: none;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #cbd5e0;
+            border-radius: 25px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+        }
+
+        .recipe-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .recipe-header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .recipe-title {
+            color: var(--primary);
+            margin: 0 0 5px 0;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .tag {
+            background: var(--accent);
+            color: #4a5568;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .scaler-container {
+            background-color: var(--accent);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .scaler-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .interactive-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .interactive-item:hover {
+            background-color: var(--accent);
+        }
+
+        .interactive-item input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 5px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .interactive-item.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .ingredient-amount {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        ul, ol {
+            padding-left: 0;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Access Denied Message -->
+    <div id="access-denied" style="display:none; text-align:center; margin-top:50px;">
+        <h2 style="color:var(--primary);">Access Denied</h2>
+        <p>You need the correct password to view these recipes.</p>
+        <button onclick="location.reload()" style="padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer;">Try Again</button>
+    </div>
+
+    <!-- Main Protected Content -->
+    <div id="protected-content">
+        <div class="header">
+            <h1>📖 Our Interactive Recipe Book</h1>
+            <input type="text" id="search" class="search-box" placeholder="Search recipes or ingredients..." onkeyup="filterRecipes()">
+        </div>
+
+        <div class="recipe-grid" id="recipe-grid">
+
+            <!-- BIG MAC SALAD -->
+            <div class="recipe-card" data-title="Big Mac Salad" data-tags="keto main salad beef">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Big Mac Salad</h2>
+                    <div class="tags"><span class="tag">Keto</span><span class="tag">Main</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef</span>
+                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp sea salt & <span class="ingredient-amount" data-base="0.25">0.25</span> tsp black pepper</span>
+                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> oz romaine lettuce</span>
+                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup chopped tomatoes</span>
+                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="0.75">0.75</span> cup shredded cheddar cheese</span>
+                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)">
+                        <input type="checkbox"> <span>Dressing: 1/2 cup mayo, 2 tbsp diced pickles, 2 tsp mustard, 1 tsp white vinegar, 1/2 tsp smoked paprika, 1.5 tbsp Erythritol</span>
+                    </li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook ground beef in a skillet over high heat. Season with sea salt and pepper (7-10 mins).</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Puree dressing ingredients in a blender. Thin with water if needed.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Combine salad ingredients, add beef, and toss with dressing.</span></li>
+                </ol>
+            </div>
+
+            <!-- ALFREDO SAUCE -->
+            <div class="recipe-card" data-title="Alfredo Sauce" data-tags="pasta sauce Italian">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Alfredo Sauce</h2>
+                    <div class="tags"><span class="tag">Pasta</span><span class="tag">Sauce</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup butter</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups heavy whipping cream</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> tsp garlic minced</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> tsp Italian seasoning</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> cups freshly grated Parmesan cheese</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Add butter and garlic to skillet over low heat until softened.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Whisk in cream, Italian seasoning, salt, and pepper. Simmer.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Whisk in Parmesan until melted and serve.</span></li>
+                </ol>
+            </div>
+
+            <!-- CHICKPEA AND ZUCCHINI BURGERS -->
+            <div class="recipe-card" data-title="Chickpea & Zucchini Burgers" data-tags="vegetarian gluten-free patties burger">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Chickpea & Zucchini Burgers</h2>
+                    <div class="tags"><span class="tag">Vegetarian</span><span class="tag">Gluten-Free</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can (540 mL) chickpeas, rinsed and dried</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> medium zucchini (grated & squeezed dry)</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup gluten-free flour + <span class="ingredient-amount" data-base="0.5">0.5</span> cup GF breadcrumbs</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> large egg</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2 cloves garlic minced, 2 tbsp red onion, 1 tsp cumin, 1/2 tsp smoked paprika, 1/2 tsp oregano</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mash chickpeas thoroughly in a bowl.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Combine with zucchini, binder, egg, aromatics, and spices. Rest mix 5 mins.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Shape into patties and fry over medium heat 4-5 mins per side.</span></li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Set your password here:
+        const SECRET_PASSWORD = "MySecretRecipePassword123!";
+
+        function checkAccess() {
+            const userPass = prompt("Enter password to view recipe book:");
+            if (userPass === SECRET_PASSWORD) {
+                document.getElementById('protected-content').style.display = 'block';
+            } else {
+                document.getElementById('access-denied').style.display = 'block';
+            }
+        }
+
+        // Run check when page loads
+        window.onload = checkAccess;
+
+        function toggleCheck(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            if (event.target !== checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+            element.classList.toggle('completed', checkbox.checked);
+        }
+
+        function adjustServings(btn, change) {
+            const card = btn.closest('.recipe-card');
+            const countSpan = card.querySelector('.servings-count');
+            let servings = parseInt(countSpan.innerText) + change;
+            if (servings < 1) return;
+
+            const baseServings = 4;
+            countSpan.innerText = servings;
+            const factor = servings / baseServings;
+
+            card.querySelectorAll('.ingredient-amount').forEach(amt => {
+                const base = parseFloat(amt.getAttribute('data-base'));
+                if (!isNaN(base)) {
+                    amt.innerText = parseFloat((base * factor).toFixed(2));
+                }
+            });
+        }
+
+        function filterRecipes() {
+            const query = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.recipe-card').forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                const text = card.innerText.toLowerCase();
+                if (title.includes(query) || tags.includes(query) || text.includes(query)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
