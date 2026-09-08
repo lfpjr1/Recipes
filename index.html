@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Recipe Book</title>
+    <title>Our Interactive Recipe Book</title>
     <style>
         :root {
             --primary: #e05638;
@@ -23,7 +23,6 @@
             line-height: 1.6;
         }
 
-        /* Hide content until password is verified */
         #protected-content {
             display: none;
         }
@@ -161,14 +160,12 @@
 </head>
 <body>
 
-    <!-- Access Denied Message -->
     <div id="access-denied" style="display:none; text-align:center; margin-top:50px;">
         <h2 style="color:var(--primary);">Access Denied</h2>
         <p>You need the correct password to view these recipes.</p>
         <button onclick="location.reload()" style="padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer;">Try Again</button>
     </div>
 
-    <!-- Main Protected Content -->
     <div id="protected-content">
         <div class="header">
             <h1>📖 Our Interactive Recipe Book</h1>
@@ -191,30 +188,49 @@
                 </div>
                 <h3>Ingredients</h3>
                 <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef</span>
-                    </li>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp sea salt & <span class="ingredient-amount" data-base="0.25">0.25</span> tsp black pepper</span>
-                    </li>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> oz romaine lettuce</span>
-                    </li>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup chopped tomatoes</span>
-                    </li>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span><span class="ingredient-amount" data-base="0.75">0.75</span> cup shredded cheddar cheese</span>
-                    </li>
-                    <li class="interactive-item" onclick="toggleCheck(this)">
-                        <input type="checkbox"> <span>Dressing: 1/2 cup mayo, 2 tbsp diced pickles, 2 tsp mustard, 1 tsp white vinegar, 1/2 tsp smoked paprika, 1.5 tbsp Erythritol</span>
-                    </li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp sea salt & <span class="ingredient-amount" data-base="0.25">0.25</span> tsp black pepper</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> oz romaine lettuce (or iceberg)</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup chopped tomatoes</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.75">0.75</span> cup shredded cheddar cheese</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup diced pickles</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Dressing: 1/2 cup mayo, 2 tbsp diced pickles, 2 tsp mustard, 1 tsp white vinegar, 1/2 tsp smoked paprika, 1.5 tbsp Erythritol</span></li>
                 </ul>
                 <h3>Instructions</h3>
                 <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook ground beef in a skillet over high heat. Season with sea salt and pepper (7-10 mins).</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook ground beef in a skillet over high heat with sea salt and pepper (7-10 mins).</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Puree dressing ingredients in a blender. Thin with water if needed.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Combine salad ingredients, add beef, and toss with dressing.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Combine salad ingredients, add beef, toss with dressing and serve.</span></li>
+                </ol>
+            </div>
+
+            <!-- POTATO SALAD -->
+            <div class="recipe-card" data-title="Potato Salad" data-tags="vegetarian salad side">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Potato Salad</h2>
+                    <div class="tags"><span class="tag">Vegetarian</span><span class="tag">Side</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> lbs potatoes, cubed and boiled</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup diced red onion</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup diced dill pickles</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> hard boiled eggs</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups Miracle Whip</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tbsp mustard & <span class="ingredient-amount" data-base="1">1</span> tbsp apple cider vinegar</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp celery seed, salt and pepper to taste</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Boil and cool cubed potatoes.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix Miracle Whip, mustard, vinegar, and spices in a large bowl.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Fold in potatoes, eggs, red onion, and dill pickles. Chill before serving.</span></li>
                 </ol>
             </div>
 
@@ -234,7 +250,7 @@
                 <ul>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup butter</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups heavy whipping cream</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> tsp garlic minced</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> tsp garlic, minced</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> tsp Italian seasoning</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> cups freshly grated Parmesan cheese</span></li>
                 </ul>
@@ -242,12 +258,67 @@
                 <ol>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Add butter and garlic to skillet over low heat until softened.</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Whisk in cream, Italian seasoning, salt, and pepper. Simmer.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Whisk in Parmesan until melted and serve.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Whisk in Parmesan until melted and serve immediately.</span></li>
+                </ol>
+            </div>
+
+            <!-- MERCY'S DUMPLINGS -->
+            <div class="recipe-card" data-title="Mercy's Dumplings" data-tags="pork shrimp appetizer">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Mercy's Dumplings</h2>
+                    <div class="tags"><span class="tag">Appetizer</span><span class="tag">Asian</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Ground pork & minced shrimp</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Onions, carrots, shiitake mushrooms (minced)</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Garlic powder, onion powder, salt, pepper, sugar</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mince all vegetables, pork, and shrimp into tiny pieces.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix thoroughly with spices and wrap into dumpling wrappers.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Steam or pan-fry until fully cooked.</span></li>
+                </ol>
+            </div>
+
+            <!-- BRAISED SHORT RIBS -->
+            <div class="recipe-card" data-title="Braised Short Ribs" data-tags="beef main braise">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Braised Short Ribs</h2>
+                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> rack short ribs</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> carrots & <span class="ingredient-amount" data-base="5">5</span> celery stalks, chopped</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> large onions, sliced & <span class="ingredient-amount" data-base="6">6</span> cloves garlic</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can tomato paste & splash of soy sauce</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> cups chicken stock & <span class="ingredient-amount" data-base="2">2</span> cups red wine (or amber ale)</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup oyster sauce, fresh rosemary and parsley</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Season and brown ribs on all sides in tallow/oil. Set aside.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Saute onions, tomato paste, carrots, celery, and garlic.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Add liquids, nestle ribs back in, cover and bake at 275°F for 4-5 hours.</span></li>
                 </ol>
             </div>
 
             <!-- CHICKPEA AND ZUCCHINI BURGERS -->
-            <div class="recipe-card" data-title="Chickpea & Zucchini Burgers" data-tags="vegetarian gluten-free patties burger">
+            <div class="recipe-card" data-title="Chickpea & Zucchini Burgers" data-tags="vegetarian gluten-free burger">
                 <div class="recipe-header">
                     <h2 class="recipe-title">Chickpea & Zucchini Burgers</h2>
                     <div class="tags"><span class="tag">Vegetarian</span><span class="tag">Gluten-Free</span></div>
@@ -262,15 +333,121 @@
                 <ul>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can (540 mL) chickpeas, rinsed and dried</span></li>
                     <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> medium zucchini (grated & squeezed dry)</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup gluten-free flour + <span class="ingredient-amount" data-base="0.5">0.5</span> cup GF breadcrumbs</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> large egg</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2 cloves garlic minced, 2 tbsp red onion, 1 tsp cumin, 1/2 tsp smoked paprika, 1/2 tsp oregano</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup GF flour + <span class="ingredient-amount" data-base="0.5">0.5</span> cup GF breadcrumbs</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> large egg, garlic, red onion, cumin, paprika, oregano</span></li>
                 </ul>
                 <h3>Instructions</h3>
                 <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mash chickpeas thoroughly in a bowl.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Combine with zucchini, binder, egg, aromatics, and spices. Rest mix 5 mins.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Shape into patties and fry over medium heat 4-5 mins per side.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mash chickpeas, combine with zucchini, binders, egg, and spices.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Rest mix 5 mins, shape into patties, and fry 4-5 mins per side.</span></li>
+                </ol>
+            </div>
+
+            <!-- CHILI -->
+            <div class="recipe-card" data-title="Chili" data-tags="beef main soup">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Chili</h2>
+                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef & <span class="ingredient-amount" data-base="1">1</span> onion, chopped</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> cloves garlic & <span class="ingredient-amount" data-base="1">1</span> bell pepper, chopped</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can crushed tomatoes & <span class="ingredient-amount" data-base="0.5">0.5</span> can adobo peppers</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Chili seasoning, cumin, cayenne, onion powder, beef bouillon</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Brown ground beef with onions and bell pepper. Add garlic.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Add tomato paste, tomatoes, adobo, water, and seasonings.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Simmer for 30 minutes up to 2 hours.</span></li>
+                </ol>
+            </div>
+
+            <!-- EGG ROLL IN A BOWL -->
+            <div class="recipe-card" data-title="Egg Roll in a Bowl" data-tags="keto main pork beef">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Egg Roll in a Bowl</h2>
+                    <div class="tags"><span class="tag">Keto</span><span class="tag">Main</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground pork or beef</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="14">14</span> oz shredded coleslaw mix</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.25">0.25</span> cup soy sauce, 1 tsp ginger, 2 tsp sriracha</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> whole egg, 1 tbsp sesame oil, green onions</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Brown pork/beef with garlic. Add coleslaw mix, soy sauce, and ginger.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Make a well in center, add egg and scramble.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Drizzle with sriracha, sesame oil, and green onions.</span></li>
+                </ol>
+            </div>
+
+            <!-- SHEPHERD'S PIE -->
+            <div class="recipe-card" data-title="Shepherd's Pie" data-tags="main beef comfort-food">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Shepherd's Pie</h2>
+                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> lbs ground beef</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> onion & <span class="ingredient-amount" data-base="2">2</span> carrots (grated), 4 cloves garlic</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Worcestershire sauce, oyster sauce, tomato paste, thyme, rosemary, red wine, stock</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Mashed Potatoes: 2.5 lbs potatoes, 2 egg yolks, cream, butter, parmesan</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook beef with carrots, onions, garlic, tomato paste, wine, and stock.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Boil, mash, and mix potatoes with egg yolks, butter, and parmesan.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Layer meat, top with potatoes and parmesan, and bake at 350°F for 20 mins.</span></li>
+                </ol>
+            </div>
+
+            <!-- SPINACH STUFFED CHICKEN -->
+            <div class="recipe-card" data-title="Spinach Stuffed Chicken" data-tags="keto chicken main">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">Spinach Stuffed Chicken</h2>
+                    <div class="tags"><span class="tag">Keto</span><span class="tag">Chicken</span></div>
+                </div>
+                <div class="scaler-container">
+                    <strong>Servings:</strong>
+                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
+                    <span class="servings-count">4</span>
+                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
+                </div>
+                <h3>Ingredients</h3>
+                <ul>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="4">4</span> chicken breasts</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="4">4</span> oz cream cheese, softened</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.25">0.25</span> cup Parmesan & <span class="ingredient-amount" data-base="2">2</span> tbsp mayo</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups chopped fresh spinach, garlic, paprika</span></li>
+                </ul>
+                <h3>Instructions</h3>
+                <ol>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Slice a pocket into each chicken breast and season outside.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix cream cheese, parmesan, mayo, spinach, and garlic.</span></li>
+                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Stuff chicken breasts and bake at 375°F for 25-30 minutes.</span></li>
                 </ol>
             </div>
 
@@ -278,7 +455,6 @@
     </div>
 
     <script>
-        // Set your password here:
         const SECRET_PASSWORD = "MySecretRecipePassword123!";
 
         function checkAccess() {
@@ -290,7 +466,6 @@
             }
         }
 
-        // Run check when page loads
         window.onload = checkAccess;
 
         function toggleCheck(element) {
