@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Interactive Recipe Book</title>
+    <title>Complete Recipe Collection</title>
     <style>
         :root {
-            --primary: #e05638;
-            --bg: #f8f6f0;
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --bg: #f8f9fa;
             --card-bg: #ffffff;
-            --text: #2d3748;
-            --accent: #edf2f7;
-            --border-radius: 12px;
+            --text: #333333;
         }
 
         body {
@@ -19,493 +18,649 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            padding: 0;
         }
 
-        #protected-content {
-            display: none;
+        /* Password Lock Screen */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.96);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
-        .header {
+        .auth-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             text-align: center;
-            max-width: 800px;
-            margin: 0 auto 30px auto;
-        }
-
-        .header h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .search-box {
+            max-width: 320px;
             width: 100%;
-            max-width: 500px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border: 2px solid #cbd5e0;
-            border-radius: 25px;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
         }
 
-        .search-box:focus {
-            border-color: var(--primary);
+        .auth-box input {
+            width: 90%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .auth-box button {
+            width: 96%;
+            padding: 10px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .error-msg {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Main Application */
+        #app {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .search-bar {
+            flex: 1 1 250px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.95rem;
         }
 
         .recipe-grid {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
         }
 
         .recipe-card {
             background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .recipe-header {
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        .recipe-title {
-            color: var(--primary);
-            margin: 0 0 5px 0;
-        }
-
-        .tags {
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 5px;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 4px solid var(--accent);
         }
 
-        .tag {
-            background: var(--accent);
-            color: #4a5568;
-            padding: 3px 10px;
+        .recipe-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #eef2f5;
+            color: var(--primary);
+            font-size: 0.75rem;
+            padding: 4px 8px;
             border-radius: 12px;
-            font-size: 0.85rem;
+            margin-right: 5px;
             font-weight: 600;
         }
 
-        .scaler-container {
-            background-color: var(--accent);
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+        .badge.diet {
+            background-color: #e8f5e9;
+            color: #2e7d32;
         }
 
-        .scaler-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .recipe-details {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
         }
 
-        .interactive-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 4px;
-        }
-
-        .interactive-item:hover {
-            background-color: var(--accent);
-        }
-
-        .interactive-item input[type="checkbox"] {
-            margin-right: 12px;
-            margin-top: 5px;
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-        }
-
-        .interactive-item.completed {
-            opacity: 0.5;
-            text-decoration: line-through;
-        }
-
-        .ingredient-amount {
-            font-weight: bold;
+        .recipe-details h4 {
+            margin: 10px 0 5px 0;
             color: var(--primary);
+            font-size: 0.95rem;
         }
 
-        ul, ol {
-            padding-left: 0;
-            list-style: none;
+        .recipe-details ul, .recipe-details ol {
+            padding-left: 20px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--accent);
+            padding: 5px 0;
         }
     </style>
 </head>
 <body>
 
-    <div id="access-denied" style="display:none; text-align:center; margin-top:50px;">
-        <h2 style="color:var(--primary);">Access Denied</h2>
-        <p>You need the correct password to view these recipes.</p>
-        <button onclick="location.reload()" style="padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer;">Try Again</button>
+    <!-- Simple Password Protection -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2>Recipe Vault</h2>
+            <p>Enter your access password:</p>
+            <input type="password" id="password-input" placeholder="Password">
+            <button onclick="checkPassword()">Unlock</button>
+            <div id="error-msg" class="error-msg">Incorrect password. Please try again.</div>
+        </div>
     </div>
 
-    <div id="protected-content">
-        <div class="header">
-            <h1>📖 Our Interactive Recipe Book</h1>
-            <input type="text" id="search" class="search-box" placeholder="Search recipes or ingredients..." onkeyup="filterRecipes()">
-        </div>
+    <!-- Protected Main Interface -->
+    <div id="app">
+        <header>
+            <h1>Complete Recipe Collection Index</h1>
+        </header>
 
-        <div class="recipe-grid" id="recipe-grid">
-
-            <!-- BIG MAC SALAD -->
-            <div class="recipe-card" data-title="Big Mac Salad" data-tags="keto main salad beef">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Big Mac Salad</h2>
-                    <div class="tags"><span class="tag">Keto</span><span class="tag">Main</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp sea salt & <span class="ingredient-amount" data-base="0.25">0.25</span> tsp black pepper</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> oz romaine lettuce (or iceberg)</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup chopped tomatoes</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.75">0.75</span> cup shredded cheddar cheese</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup diced pickles</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Dressing: 1/2 cup mayo, 2 tbsp diced pickles, 2 tsp mustard, 1 tsp white vinegar, 1/2 tsp smoked paprika, 1.5 tbsp Erythritol</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook ground beef in a skillet over high heat with sea salt and pepper (7-10 mins).</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Puree dressing ingredients in a blender. Thin with water if needed.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Combine salad ingredients, add beef, toss with dressing and serve.</span></li>
-                </ol>
+        <section class="controls">
+            <div class="search-bar">
+                <input type="text" id="search" placeholder="Search recipe or ingredient..." oninput="filterRecipes()">
             </div>
+            <div class="filter-group">
+                <select id="category-filter" onchange="filterRecipes()">
+                    <option value="All">All Categories</option>
+                    <option value="Appetizers & Snacks">Appetizers & Snacks</option>
+                    <option value="Salads">Salads</option>
+                    <option value="Soups & Stews">Soups & Stews</option>
+                    <option value="Main Dishes (Beef & Pork)">Main Dishes (Beef & Pork)</option>
+                    <option value="Main Dishes (Poultry)">Main Dishes (Poultry)</option>
+                    <option value="Vegetarian & Seafood">Vegetarian & Seafood</option>
+                    <option value="Side Dishes & Breads">Side Dishes & Breads</option>
+                    <option value="Desserts & Sweets">Desserts & Sweets</option>
+                    <option value="Sauces, Dips & Rubs">Sauces, Dips & Rubs</option>
+                </select>
 
-            <!-- POTATO SALAD -->
-            <div class="recipe-card" data-title="Potato Salad" data-tags="vegetarian salad side">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Potato Salad</h2>
-                    <div class="tags"><span class="tag">Vegetarian</span><span class="tag">Side</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> lbs potatoes, cubed and boiled</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup diced red onion</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> cup diced dill pickles</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> hard boiled eggs</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups Miracle Whip</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tbsp mustard & <span class="ingredient-amount" data-base="1">1</span> tbsp apple cider vinegar</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> tsp celery seed, salt and pepper to taste</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Boil and cool cubed potatoes.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix Miracle Whip, mustard, vinegar, and spices in a large bowl.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Fold in potatoes, eggs, red onion, and dill pickles. Chill before serving.</span></li>
-                </ol>
+                <select id="diet-filter" onchange="filterRecipes()">
+                    <option value="All">All Dietary Types</option>
+                    <option value="Keto/Low-Carb">Keto / Low-Carb</option>
+                    <option value="Gluten-Free">Gluten-Free</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                </select>
             </div>
+        </section>
 
-            <!-- ALFREDO SAUCE -->
-            <div class="recipe-card" data-title="Alfredo Sauce" data-tags="pasta sauce Italian">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Alfredo Sauce</h2>
-                    <div class="tags"><span class="tag">Pasta</span><span class="tag">Sauce</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup butter</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups heavy whipping cream</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> tsp garlic, minced</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> tsp Italian seasoning</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> cups freshly grated Parmesan cheese</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Add butter and garlic to skillet over low heat until softened.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Whisk in cream, Italian seasoning, salt, and pepper. Simmer.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Whisk in Parmesan until melted and serve immediately.</span></li>
-                </ol>
-            </div>
-
-            <!-- MERCY'S DUMPLINGS -->
-            <div class="recipe-card" data-title="Mercy's Dumplings" data-tags="pork shrimp appetizer">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Mercy's Dumplings</h2>
-                    <div class="tags"><span class="tag">Appetizer</span><span class="tag">Asian</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Ground pork & minced shrimp</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Onions, carrots, shiitake mushrooms (minced)</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Garlic powder, onion powder, salt, pepper, sugar</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mince all vegetables, pork, and shrimp into tiny pieces.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix thoroughly with spices and wrap into dumpling wrappers.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Steam or pan-fry until fully cooked.</span></li>
-                </ol>
-            </div>
-
-            <!-- BRAISED SHORT RIBS -->
-            <div class="recipe-card" data-title="Braised Short Ribs" data-tags="beef main braise">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Braised Short Ribs</h2>
-                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> rack short ribs</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="3">3</span> carrots & <span class="ingredient-amount" data-base="5">5</span> celery stalks, chopped</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> large onions, sliced & <span class="ingredient-amount" data-base="6">6</span> cloves garlic</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can tomato paste & splash of soy sauce</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> cups chicken stock & <span class="ingredient-amount" data-base="2">2</span> cups red wine (or amber ale)</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup oyster sauce, fresh rosemary and parsley</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Season and brown ribs on all sides in tallow/oil. Set aside.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Saute onions, tomato paste, carrots, celery, and garlic.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Add liquids, nestle ribs back in, cover and bake at 275°F for 4-5 hours.</span></li>
-                </ol>
-            </div>
-
-            <!-- CHICKPEA AND ZUCCHINI BURGERS -->
-            <div class="recipe-card" data-title="Chickpea & Zucchini Burgers" data-tags="vegetarian gluten-free burger">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Chickpea & Zucchini Burgers</h2>
-                    <div class="tags"><span class="tag">Vegetarian</span><span class="tag">Gluten-Free</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can (540 mL) chickpeas, rinsed and dried</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> medium zucchini (grated & squeezed dry)</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.5">0.5</span> cup GF flour + <span class="ingredient-amount" data-base="0.5">0.5</span> cup GF breadcrumbs</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> large egg, garlic, red onion, cumin, paprika, oregano</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Mash chickpeas, combine with zucchini, binders, egg, and spices.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Rest mix 5 mins, shape into patties, and fry 4-5 mins per side.</span></li>
-                </ol>
-            </div>
-
-            <!-- CHILI -->
-            <div class="recipe-card" data-title="Chili" data-tags="beef main soup">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Chili</h2>
-                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground beef & <span class="ingredient-amount" data-base="1">1</span> onion, chopped</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="8">8</span> cloves garlic & <span class="ingredient-amount" data-base="1">1</span> bell pepper, chopped</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> can crushed tomatoes & <span class="ingredient-amount" data-base="0.5">0.5</span> can adobo peppers</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Chili seasoning, cumin, cayenne, onion powder, beef bouillon</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Brown ground beef with onions and bell pepper. Add garlic.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Add tomato paste, tomatoes, adobo, water, and seasonings.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Simmer for 30 minutes up to 2 hours.</span></li>
-                </ol>
-            </div>
-
-            <!-- EGG ROLL IN A BOWL -->
-            <div class="recipe-card" data-title="Egg Roll in a Bowl" data-tags="keto main pork beef">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Egg Roll in a Bowl</h2>
-                    <div class="tags"><span class="tag">Keto</span><span class="tag">Main</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> lb ground pork or beef</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="14">14</span> oz shredded coleslaw mix</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.25">0.25</span> cup soy sauce, 1 tsp ginger, 2 tsp sriracha</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> whole egg, 1 tbsp sesame oil, green onions</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Brown pork/beef with garlic. Add coleslaw mix, soy sauce, and ginger.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Make a well in center, add egg and scramble.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Drizzle with sriracha, sesame oil, and green onions.</span></li>
-                </ol>
-            </div>
-
-            <!-- SHEPHERD'S PIE -->
-            <div class="recipe-card" data-title="Shepherd's Pie" data-tags="main beef comfort-food">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Shepherd's Pie</h2>
-                    <div class="tags"><span class="tag">Beef</span><span class="tag">Main</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="2">2</span> lbs ground beef</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1">1</span> onion & <span class="ingredient-amount" data-base="2">2</span> carrots (grated), 4 cloves garlic</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Worcestershire sauce, oyster sauce, tomato paste, thyme, rosemary, red wine, stock</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>Mashed Potatoes: 2.5 lbs potatoes, 2 egg yolks, cream, butter, parmesan</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Cook beef with carrots, onions, garlic, tomato paste, wine, and stock.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Boil, mash, and mix potatoes with egg yolks, butter, and parmesan.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Layer meat, top with potatoes and parmesan, and bake at 350°F for 20 mins.</span></li>
-                </ol>
-            </div>
-
-            <!-- SPINACH STUFFED CHICKEN -->
-            <div class="recipe-card" data-title="Spinach Stuffed Chicken" data-tags="keto chicken main">
-                <div class="recipe-header">
-                    <h2 class="recipe-title">Spinach Stuffed Chicken</h2>
-                    <div class="tags"><span class="tag">Keto</span><span class="tag">Chicken</span></div>
-                </div>
-                <div class="scaler-container">
-                    <strong>Servings:</strong>
-                    <button class="scaler-btn" onclick="adjustServings(this, -1)">-</button>
-                    <span class="servings-count">4</span>
-                    <button class="scaler-btn" onclick="adjustServings(this, 1)">+</button>
-                </div>
-                <h3>Ingredients</h3>
-                <ul>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="4">4</span> chicken breasts</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="4">4</span> oz cream cheese, softened</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="0.25">0.25</span> cup Parmesan & <span class="ingredient-amount" data-base="2">2</span> tbsp mayo</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span><span class="ingredient-amount" data-base="1.5">1.5</span> cups chopped fresh spinach, garlic, paprika</span></li>
-                </ul>
-                <h3>Instructions</h3>
-                <ol>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>1. Slice a pocket into each chicken breast and season outside.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>2. Mix cream cheese, parmesan, mayo, spinach, and garlic.</span></li>
-                    <li class="interactive-item" onclick="toggleCheck(this)"><input type="checkbox"> <span>3. Stuff chicken breasts and bake at 375°F for 25-30 minutes.</span></li>
-                </ol>
-            </div>
-
-        </div>
+        <main class="recipe-grid" id="recipe-list">
+            <!-- Cards injected via JavaScript -->
+        </main>
     </div>
 
     <script>
-        const SECRET_PASSWORD = "MySecretRecipePassword123!";
+        const ACCESS_PASSWORD = "recipessecret";
 
-        function checkAccess() {
-            const userPass = prompt("Enter password to view recipe book:");
-            if (userPass === SECRET_PASSWORD) {
-                document.getElementById('protected-content').style.display = 'block';
+        const recipes = [
+            // APPETIZERS & SNACKS
+            {
+                name: "Mercy's Pork & Shrimp Dumplings",
+                category: "Appetizers & Snacks",
+                tags: [],
+                ingredients: ["1 lb ground pork", "1/2 lb minced peeled shrimp", "2 tbsp soy sauce", "1 tbsp sesame oil", "1 tbsp minced ginger", "2 minced green onions", "1 pack dumpling wrappers"],
+                instructions: ["Mix pork, shrimp, soy sauce, sesame oil, ginger, and green onions in a bowl.", "Place 1 tbsp filling in the center of a wrapper, moisten edges with water, and fold to seal.", "Steam for 10-12 minutes or pan-fry until bottom is crisp, then steam with 1/4 cup water until cooked."]
+            },
+            {
+                name: "Smoked Jalapeno Popper Dip",
+                category: "Appetizers & Snacks",
+                tags: ["Keto/Low-Carb"],
+                ingredients: ["8 oz cream cheese, softened", "1 cup shredded cheddar cheese", "1/2 cup sour cream", "5 jalapenos, diced", "6 slices cooked bacon, crumbled", "1/2 tsp garlic powder"],
+                instructions: ["Preheat smoker or oven to 225°F.", "Mix cream cheese, cheddar, sour cream, jalapenos, bacon, and garlic powder until blended.", "Transfer to a skillet or baking dish and smoke/bake for 45-60 minutes until bubbling."]
+            },
+            {
+                name: "Crispy Bacon-Wrapped Jalapeño Poppers",
+                category: "Appetizers & Snacks",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["10 fresh jalapeños, halved and seeded", "8 oz cream cheese", "1 cup shredded sharp cheddar", "10 slices bacon, halved"],
+                instructions: ["Preheat oven to 400°F.", "Mix cream cheese and cheddar; stuff into jalapeño halves.", "Wrap each half with half a slice of bacon and secure with a toothpick.", "Bake for 20-25 minutes until bacon is crisp."]
+            },
+            {
+                name: "Pork Belly Burnt Ends",
+                category: "Appetizers & Snacks",
+                tags: [],
+                ingredients: ["3 lbs pork belly, cut into 1-inch cubes", "1/2 cup pork rub", "1/2 cup BBQ sauce", "1/4 cup honey", "4 tbsp butter, cubed"],
+                instructions: ["Preheat smoker to 275°F.", "Coat pork belly cubes evenly with rub and smoke for 2.5 hours.", "Transfer cubes to a foil pan, top with butter, honey, and BBQ sauce.", "Cover with foil and smoke for another 1.5 hours until fork-tender."]
+            },
+            {
+                name: "Protein Bars",
+                category: "Appetizers & Snacks",
+                tags: ["Vegetarian"],
+                ingredients: ["2 cups oats", "1 cup protein powder", "1/2 cup peanut butter", "1/2 cup honey", "1/3 cup milk or almond milk", "1/4 cup dark chocolate chips"],
+                instructions: ["Mix oats and protein powder in a bowl.", "Stir in peanut butter, honey, and milk until a thick dough forms.", "Press firmly into a lined 8x8 pan, sprinkle chocolate chips, and refrigerate for 2 hours before cutting."]
+            },
+
+            // SALADS
+            {
+                name: "Big Mac Salad",
+                category: "Salads",
+                tags: ["Keto/Low-Carb"],
+                ingredients: ["1 lb ground beef", "4 cups chopped iceberg lettuce", "1/2 cup shredded cheddar", "1/4 cup diced pickles", "Sauce: 1/2 cup mayo, 2 tbsp relish, 1 tbsp mustard, 1/2 tsp paprika"],
+                instructions: ["Brown the ground beef in a skillet and drain fat; let cool slightly.", "Whisk sauce ingredients together in a small bowl.", "Assemble lettuce in bowls, top with beef, cheddar, and pickles, then drizzle with sauce."]
+            },
+            {
+                name: "Potato Salad",
+                category: "Salads",
+                tags: ["Gluten-Free"],
+                ingredients: ["3 lbs Yukon gold potatoes, cubed", "4 hard-boiled eggs, chopped", "1 cup mayo", "2 tbsp yellow mustard", "1/2 cup chopped celery", "1/4 cup diced red onion", "Salt, pepper, paprika"],
+                instructions: ["Boil potatoes until tender (12-15 mins); drain and cool completely.", "In a large bowl, mix mayo, mustard, salt, and pepper.", "Fold in potatoes, eggs, celery, and red onion. Chill before serving."]
+            },
+            {
+                name: "Quinoa Salad",
+                category: "Salads",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["1 cup cooked quinoa", "1 red bell pepper, diced", "1 cup cucumber, diced", "1/4 cup chopped parsley", "Dressing: 3 tbsp olive oil, 2 tbsp lemon juice, salt, pepper"],
+                instructions: ["Allow cooked quinoa to cool.", "Combine quinoa, red bell pepper, cucumber, and parsley in a bowl.", "Whisk dressing ingredients, pour over salad, and toss well."]
+            },
+            {
+                name: "Greek Quinoa Salad",
+                category: "Salads",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["2 cups cooked quinoa", "1 cup cherry tomatoes, halved", "1/2 cup diced cucumber", "1/2 cup kalamata olives", "1/2 cup crumbled feta", "Dressing: 3 tbsp olive oil, 1 tbsp red wine vinegar, 1/2 tsp oregano"],
+                instructions: ["Combine cooled quinoa, tomatoes, cucumber, olives, and feta.", "Whisk olive oil, red wine vinegar, and oregano together.", "Pour dressing over quinoa mixture and toss gently."]
+            },
+
+            // SOUPS & STEWS
+            {
+                name: "Cheeseburger Soup",
+                category: "Soups & Stews",
+                tags: ["Keto/Low-Carb"],
+                ingredients: ["1 lb ground beef", "3 cups beef broth", "8 oz cream cheese", "2 cups shredded cheddar", "1/2 cup chopped onion", "1/2 cup chopped celery", "1/2 cup heavy cream"],
+                instructions: ["Sauté beef, onion, and celery in a pot until beef is browned.", "Add beef broth and simmer for 15 minutes.", "Reduce heat, stir in cream cheese, heavy cream, and cheddar until melted and smooth."]
+            },
+            {
+                name: "Unstuffed Cabbage Soup",
+                category: "Soups & Stews",
+                tags: ["Keto/Low-Carb"],
+                ingredients: ["1 lb ground beef", "1/2 head cabbage, chopped", "1 diced onion", "2 cloves minced garlic", "4 cups beef broth", "1 can (14 oz) diced tomatoes", "1 tbsp tomato paste"],
+                instructions: ["Brown ground beef with onion and garlic in a soup pot.", "Add chopped cabbage, beef broth, diced tomatoes, and tomato paste.", "Simmer for 25-30 minutes until cabbage is tender."]
+            },
+            {
+                name: "Cream of Broccoli Soup",
+                category: "Soups & Stews",
+                tags: ["Vegetarian"],
+                ingredients: ["4 cups broccoli florets", "1 diced onion", "2 tbsp butter", "3 cups vegetable broth", "1 cup heavy cream or whole milk", "1 cup shredded cheddar"],
+                instructions: ["Melt butter in a pot and sauté onion until soft.", "Add broccoli and vegetable broth; simmer 15 mins until broccoli is tender.", "Puree with an immersion blender, then stir in heavy cream and cheddar until smooth."]
+            },
+            {
+                name: "Dad's Chicken Soup",
+                category: "Soups & Stews",
+                tags: [],
+                ingredients: ["1 lb shredded cooked chicken", "6 cups chicken broth", "2 carrots, sliced", "2 celery stalks, sliced", "1 onion, diced", "1 cup egg noodles", "Salt, pepper, thyme"],
+                instructions: ["Sauté carrots, celery, and onion in a pot until softened.", "Add chicken broth and seasonings; bring to a boil.", "Add egg noodles and cook for 8 minutes, then stir in shredded chicken."]
+            },
+            {
+                name: "Beef Stew",
+                category: "Soups & Stews",
+                tags: [],
+                ingredients: ["2 lbs beef chuck, cubed", "4 cups beef broth", "3 potatoes, cubed", "3 carrots, sliced", "1 onion, chopped", "2 tbsp tomato paste", "2 tbsp flour"],
+                instructions: ["Dredge beef in flour and sear in a hot pot; remove.", "Sauté onion, add tomato paste, broth, and browned beef; cover and simmer 1.5 hours.", "Add potatoes and carrots, simmer another 30 minutes until tender."]
+            },
+            {
+                name: "Bean Stew",
+                category: "Soups & Stews",
+                tags: ["Vegetarian"],
+                ingredients: ["2 cans (15 oz) cannellini beans", "1 can diced tomatoes", "1 diced onion", "2 cloves garlic", "3 cups vegetable broth", "1 tsp rosemary", "2 cups spinach"],
+                instructions: ["Sauté onion and garlic in olive oil.", "Add diced tomatoes, beans, vegetable broth, and rosemary.", "Simmer for 20 minutes, then stir in spinach until wilted."]
+            },
+
+            // MAIN DISHES (BEEF & PORK)
+            {
+                name: "Braised Short Ribs",
+                category: "Main Dishes (Beef & Pork)",
+                tags: [],
+                ingredients: ["3 lbs beef short ribs", "2 cups red wine", "2 cups beef broth", "1 onion, sliced", "2 carrots, chopped", "2 tbsp tomato paste", "Fresh thyme and rosemary"],
+                instructions: ["Sear short ribs on all sides in a Dutch oven; remove.", "Sauté vegetables, stir in tomato paste, red wine, and broth.", "Return ribs to pot, cover, and braise at 325°F for 2.5 to 3 hours until tender."]
+            },
+            {
+                name: "Korean Short Ribs",
+                category: "Main Dishes (Beef & Pork)",
+                tags: [],
+                ingredients: ["2.5 lbs flanken-style short ribs", "1/2 cup soy sauce", "1/4 cup brown sugar", "1/4 cup water", "1 tbsp sesame oil", "1 grated pear", "3 cloves garlic"],
+                instructions: ["Whisk soy sauce, sugar, water, sesame oil, pear, and garlic.", "Marinate short ribs for at least 4 hours.", "Grill or broil on high heat for 3-4 minutes per side."]
+            },
+            {
+                name: "Shepherd's Pie",
+                category: "Main Dishes (Beef & Pork)",
+                tags: [],
+                ingredients: ["1.5 lbs ground beef or lamb", "1 cup frozen peas and carrots", "1 onion, diced", "2 tbsp flour", "1 cup beef broth", "3 cups mashed potatoes"],
+                instructions: ["Brown beef with onion; stir in flour, broth, peas, and carrots. Simmer 10 mins.", "Transfer filling to baking dish, spread mashed potatoes on top.", "Bake at 400°F for 25 minutes until top is golden."]
+            },
+            {
+                name: "Stove Top Meatloaf",
+                category: "Main Dishes (Beef & Pork)",
+                tags: [],
+                ingredients: ["1.5 lbs ground beef", "1 box Stove Top stuffing mix", "1 cup water", "2 eggs", "1/2 cup ketchup"],
+                instructions: ["Mix ground beef, stuffing mix, water, and eggs together.", "Shape into a loaf in a baking dish and top with ketchup.", "Bake at 375°F for 45-50 minutes."]
+            },
+            {
+                name: "Lasagna",
+                category: "Main Dishes (Beef & Pork)",
+                tags: [],
+                ingredients: ["1 lb ground beef", "1 jar (24 oz) marinara", "9 lasagna noodles, cooked", "15 oz ricotta cheese", "2 cups mozzarella", "1/2 cup parmesan"],
+                instructions: ["Brown ground beef and stir into marinara sauce.", "Layer sauce, noodles, ricotta, and mozzarella in a 9x13 dish.", "Bake at 375°F for 40 minutes covered, then 10 minutes uncovered."]
+            },
+            {
+                name: "Egg Roll in a Bowl",
+                category: "Main Dishes (Beef & Pork)",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["1 lb ground pork", "1 bag (16 oz) coleslaw mix", "3 tbsp soy sauce or coconut aminos", "1 tbsp sesame oil", "1 tsp ginger", "2 cloves garlic"],
+                instructions: ["Brown ground pork with garlic and ginger in a skillet.", "Add coleslaw mix, soy sauce, and sesame oil.", "Sauté for 5-7 minutes until cabbage is tender-crisp."]
+            },
+
+            // MAIN DISHES (POULTRY)
+            {
+                name: "Chick-Fil-A Copycat Chicken",
+                category: "Main Dishes (Poultry)",
+                tags: [],
+                ingredients: ["1 lb chicken breasts, bite-sized", "1/2 cup pickle juice", "1 egg", "1/2 cup milk", "1 cup flour", "1 tbsp powdered sugar", "Peanut oil for frying"],
+                instructions: ["Marinate chicken in pickle juice for 30 mins; drain.", "Whisk egg and milk. Mix flour, powdered sugar, paprika, salt, and pepper.", "Dip chicken in milk mixture, dredge in flour, and fry in oil at 350°F for 4-5 minutes."]
+            },
+            {
+                name: "Greek Chicken Skewers",
+                category: "Main Dishes (Poultry)",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["1.5 lbs chicken breast, cubed", "1/4 cup olive oil", "2 tbsp lemon juice", "3 cloves garlic, minced", "1 tbsp dried oregano"],
+                instructions: ["Whisk olive oil, lemon juice, garlic, and oregano.", "Marinate chicken cubes for 1 hour.", "Thread onto skewers and grill over medium-high heat for 10-12 minutes."]
+            },
+            {
+                name: "Chicken Chow Mein",
+                category: "Main Dishes (Poultry)",
+                tags: [],
+                ingredients: ["1 lb sliced chicken breast", "8 oz chow mein noodles", "2 cups shredded cabbage", "1 sliced carrot", "Sauce: 3 tbsp soy sauce, 1 tbsp oyster sauce, 1 tsp sesame oil"],
+                instructions: ["Cook noodles according to package; set aside.", "Stir-fry chicken until cooked; remove. Sauté cabbage and carrots.", "Add noodles, chicken, and sauce back to pan; toss on high heat for 2 minutes."]
+            },
+            {
+                name: "Chicken Wings",
+                category: "Main Dishes (Poultry)",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["2 lbs chicken wings", "1 tbsp baking powder", "1 tsp salt", "1/2 cup hot sauce mixed with 4 tbsp melted butter"],
+                instructions: ["Toss wings thoroughly with baking powder and salt.", "Bake at 400°F on a wire rack for 45-50 minutes, flipping halfway.", "Toss crispy wings in hot butter sauce."]
+            },
+            {
+                name: "Spinach Stuffed Chicken Breasts",
+                category: "Main Dishes (Poultry)",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["4 chicken breasts", "4 oz cream cheese", "1/2 cup cooked chopped spinach", "1/2 cup mozzarella", "1/2 tsp garlic powder"],
+                instructions: ["Cut a pocket into the side of each chicken breast.", "Mix cream cheese, spinach, mozzarella, and garlic powder; stuff into chicken breasts.", "Bake at 375°F for 30 minutes until chicken reaches 165°F."]
+            },
+
+            // VEGETARIAN & SEAFOOD
+            {
+                name: "Chick Pea & Zucchini Burgers",
+                category: "Vegetarian & Seafood",
+                tags: ["Vegetarian"],
+                ingredients: ["1 can chickpeas, drained and mashed", "1 cup grated zucchini (squeezed dry)", "1/2 cup breadcrumbs", "1 egg", "1 tsp cumin"],
+                instructions: ["Combine chickpeas, zucchini, breadcrumbs, egg, and cumin in a bowl.", "Form into patties and pan-fry in olive oil for 4-5 minutes per side."]
+            },
+            {
+                name: "Black Bean Burgers",
+                category: "Vegetarian & Seafood",
+                tags: ["Vegetarian"],
+                ingredients: ["1 can black beans, drained and mashed", "1/2 cup breadcrumbs", "1/2 cup diced onion", "1 egg", "1 tsp chili powder"],
+                instructions: ["Mix black beans, breadcrumbs, onion, egg, and chili powder.", "Shape into patties and bake at 375°F for 10 minutes per side."]
+            },
+            {
+                name: "Creamy Butter Beans",
+                category: "Vegetarian & Seafood",
+                tags: ["Vegetarian"],
+                ingredients: ["2 cans butter beans, drained", "2 tbsp butter", "2 cloves minced garlic", "1/2 cup heavy cream or coconut milk", "1/4 cup parmesan"],
+                instructions: ["Sauté garlic in butter for 1 minute.", "Add butter beans and heavy cream; simmer for 5-8 minutes.", "Stir in parmesan until creamy."]
+            },
+            {
+                name: "Tomato Basil Risotto",
+                category: "Vegetarian & Seafood",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["1 cup Arborio rice", "4 cups warm vegetable broth", "1/2 cup tomato puree", "1/2 cup parmesan", "1/4 cup fresh basil"],
+                instructions: ["Sauté rice in butter; gradually add warm broth 1/2 cup at a time while stirring.", "Stir in tomato puree halfway through.", "Finish with parmesan and fresh basil."]
+            },
+            {
+                name: "Seafood Paella",
+                category: "Vegetarian & Seafood",
+                tags: ["Gluten-Free"],
+                ingredients: ["1 cup bomba or short-grain rice", "2.5 cups seafood broth", "1/2 lb shrimp", "1/2 lb mussels", "1 pinch saffron threads", "1/2 cup peas"],
+                instructions: ["Sauté rice in olive oil with saffron; stir in seafood broth.", "Simmer uncovered for 15 minutes without stirring.", "Arrange shrimp, mussels, and peas on top; cover and cook 8 minutes until seafood is done."]
+            },
+            {
+                name: "Cod Au Gratin",
+                category: "Vegetarian & Seafood",
+                tags: [],
+                ingredients: ["1.5 lbs cod fillets", "2 tbsp butter", "2 tbsp flour", "1 cup milk", "1.5 cups cheddar cheese", "1/2 cup breadcrumbs"],
+                instructions: ["Make cheese sauce with butter, flour, milk, and 1 cup cheddar.", "Place cod in baking dish, pour sauce over, and top with remaining cheddar and breadcrumbs.", "Bake at 375°F for 20-25 minutes."]
+            },
+
+            // SIDE DISHES & BREADS
+            {
+                name: "Creamy Garlic & Onion Scalloped Potatoes",
+                category: "Side Dishes & Breads",
+                tags: ["Gluten-Free"],
+                ingredients: ["4 thin sliced potatoes", "1 sliced onion", "2 cups heavy cream", "3 minced garlic cloves", "1 cup Gruyere or cheddar cheese"],
+                instructions: ["Layer sliced potatoes and onions in a greased baking dish.", "Warm heavy cream with minced garlic; pour over potatoes.", "Top with cheese and bake at 375°F for 50-60 minutes until tender."]
+            },
+            {
+                name: "Sweet Potato Casserole",
+                category: "Side Dishes & Breads",
+                tags: ["Vegetarian"],
+                ingredients: ["3 cups mashed sweet potatoes", "1/4 cup melted butter", "1/4 cup brown sugar", "Topping: 1/2 cup brown sugar, 1/3 cup flour, 1/2 cup chopped pecans, 3 tbsp butter"],
+                instructions: ["Mix sweet potatoes, melted butter, and sugar; spread in dish.", "Combine topping ingredients into crumbles and sprinkle over top.", "Bake at 350°F for 30 minutes."]
+            },
+            {
+                name: "Baguettes",
+                category: "Side Dishes & Breads",
+                tags: ["Vegetarian"],
+                ingredients: ["3 cups bread flour", "1.25 cups warm water", "1.5 tsp yeast", "1.5 tsp salt"],
+                instructions: ["Knead dough, allow to rise 1.5 hours.", "Shape into long loaves, score tops, and rise 30 mins.", "Bake at 450°F with a pan of water on bottom rack for 20-25 minutes."]
+            },
+            {
+                name: "Bread Machine Hamburger Buns",
+                category: "Side Dishes & Breads",
+                tags: ["Vegetarian"],
+                ingredients: ["3 cups flour", "1 cup warm water", "1 egg", "2 tbsp butter", "2 tbsp sugar", "2 tsp yeast"],
+                instructions: ["Add ingredients to bread machine on Dough cycle.", "Shape into 8 bun rounds, let rise 30 mins.", "Brush with egg wash and bake at 375°F for 12-15 minutes."]
+            },
+            {
+                name: "Rice Flour Tortillas",
+                category: "Side Dishes & Breads",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["2 cups white rice flour", "1 cup hot water", "1 tbsp oil", "1/2 tsp salt"],
+                instructions: ["Mix flour, salt, oil, and hot water into a smooth dough.", "Divide into balls and press thin between parchment paper.", "Cook on a hot dry skillet for 1-2 minutes per side."]
+            },
+
+            // DESSERTS & SWEETS
+            {
+                name: "Bugden's Carrot Cake",
+                category: "Desserts & Sweets",
+                tags: ["Vegetarian"],
+                ingredients: ["2 cups flour", "2 cups sugar", "2 cups grated carrots", "1 cup oil", "4 eggs", "Frosting: 8 oz cream cheese, 1/2 cup butter, 3 cups powdered sugar"],
+                instructions: ["Mix cake ingredients together; pour into two 9-inch pans.", "Bake at 350°F for 35 minutes.", "Cool completely and frost with cream cheese icing."]
+            },
+            {
+                name: "Mom's Cinnamon Buns",
+                category: "Desserts & Sweets",
+                tags: ["Vegetarian"],
+                ingredients: ["Dough: 4 cups flour, 1 cup milk, 1/3 cup butter, 2.25 tsp yeast", "Filling: 1 cup brown sugar, 2.5 tbsp cinnamon, 1/3 cup butter"],
+                instructions: ["Roll raised dough into rectangle, spread butter, sugar, and cinnamon.", "Roll up, slice into 12 buns, let rise 30 mins.", "Bake at 350°F for 20 minutes."]
+            },
+            {
+                name: "GF Cheesecake",
+                category: "Desserts & Sweets",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["Crust: 1.5 cups GF graham crumbs, 4 tbsp melted butter", "Filling: 24 oz cream cheese, 1 cup sugar, 3 eggs, 1 tsp vanilla"],
+                instructions: ["Press crust into springform pan.", "Beat cream cheese and sugar, add eggs and vanilla; pour over crust.", "Bake at 325°F for 55 minutes, then chill overnight."]
+            },
+            {
+                name: "Mom's Chocolate Chip Cookies",
+                category: "Desserts & Sweets",
+                tags: ["Vegetarian"],
+                ingredients: ["2.25 cups flour", "1 cup butter, softened", "3/4 cup sugar", "3/4 cup brown sugar", "2 cups chocolate chips", "2 eggs"],
+                instructions: ["Cream butter and sugars; beat in eggs.", "Stir in flour and chocolate chips.", "Drop spoonfuls onto baking sheet; bake at 375°F for 9-11 minutes."]
+            },
+            {
+                name: "Zia Ando's Chocolate Cake",
+                category: "Desserts & Sweets",
+                tags: ["Vegetarian"],
+                ingredients: ["2 cups flour", "2 cups sugar", "3/4 cup cocoa powder", "2 tsp baking powder", "1 cup milk", "1/2 cup vegetable oil", "1 cup boiling water"],
+                instructions: ["Whisk dry ingredients, stir in milk, oil, and eggs.", "Stir in boiling water last (batter will be thin).", "Bake at 350°F for 30-35 minutes."]
+            },
+
+            // SAUCES, DIPS & RUBS
+            {
+                name: "BBQ Sauce",
+                category: "Sauces, Dips & Rubs",
+                tags: [],
+                ingredients: ["2 cups ketchup", "1/2 cup apple cider vinegar", "1/2 cup brown sugar", "2 tbsp Worcestershire sauce", "1 tbsp smoked paprika"],
+                instructions: ["Combine all ingredients in a saucepan.", "Simmer over low heat for 20 minutes stirring occasionally."]
+            },
+            {
+                name: "Caesar Dressing",
+                category: "Sauces, Dips & Rubs",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["1/2 cup mayo", "1/4 cup grated parmesan", "1 tbsp lemon juice", "1 tsp anchovy paste", "1 minced garlic clove"],
+                instructions: ["Whisk all ingredients together until smooth and creamy. Chill before serving."]
+            },
+            {
+                name: "Tzatziki",
+                category: "Sauces, Dips & Rubs",
+                tags: ["Vegetarian", "Gluten-Free"],
+                ingredients: ["1 cup Greek yogurt", "1/2 cup grated cucumber (squeezed dry)", "1 tbsp olive oil", "1 tbsp lemon juice", "1 clove minced garlic"],
+                instructions: ["Stir cucumber, olive oil, lemon juice, and garlic into Greek yogurt. Chill 1 hour."]
+            },
+            {
+                name: "Taco Seasoning",
+                category: "Sauces, Dips & Rubs",
+                tags: ["Keto/Low-Carb", "Gluten-Free"],
+                ingredients: ["1 tbsp chili powder", "1.5 tsp cumin", "1 tsp paprika", "1/2 tsp onion powder", "1/2 tsp garlic powder", "1/2 tsp oregano"],
+                instructions: ["Mix all spices together thoroughly. Store in an airtight container."]
+            },
+            {
+                name: "Pulled Pork Rub",
+                category: "Sauces, Dips & Rubs",
+                tags: ["Gluten-Free"],
+                ingredients: ["1/2 cup brown sugar", "1/4 cup paprika", "2 tbsp black pepper", "2 tbsp salt", "1 tbsp garlic powder", "1 tbsp onion powder"],
+                instructions: ["Mix ingredients thoroughly and rub generously onto pork shoulder before smoking."]
+            }
+        ];
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('error-msg');
+            if (input === ACCESS_PASSWORD) {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                renderRecipes(recipes);
             } else {
-                document.getElementById('access-denied').style.display = 'block';
+                errorMsg.style.display = 'block';
             }
         }
 
-        window.onload = checkAccess;
-
-        function toggleCheck(element) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            if (event.target !== checkbox) {
-                checkbox.checked = !checkbox.checked;
+        document.getElementById("password-input").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
             }
-            element.classList.toggle('completed', checkbox.checked);
-        }
+        });
 
-        function adjustServings(btn, change) {
-            const card = btn.closest('.recipe-card');
-            const countSpan = card.querySelector('.servings-count');
-            let servings = parseInt(countSpan.innerText) + change;
-            if (servings < 1) return;
+        function renderRecipes(items) {
+            const container = document.getElementById('recipe-list');
+            container.innerHTML = '';
 
-            const baseServings = 4;
-            countSpan.innerText = servings;
-            const factor = servings / baseServings;
+            if (items.length === 0) {
+                container.innerHTML = '<p>No recipes match your criteria.</p>';
+                return;
+            }
 
-            card.querySelectorAll('.ingredient-amount').forEach(amt => {
-                const base = parseFloat(amt.getAttribute('data-base'));
-                if (!isNaN(base)) {
-                    amt.innerText = parseFloat((base * factor).toFixed(2));
-                }
+            items.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                
+                const tagsHtml = recipe.tags.map(tag => `<span class="badge diet">${tag}</span>`).join('');
+                const ingList = recipe.ingredients.map(ing => `<li>${ing}</li>`).join('');
+                const stepList = recipe.instructions.map(step => `<li>${step}</li>`).join('');
+
+                card.innerHTML = `
+                    <div>
+                        <h3>${recipe.name}</h3>
+                        <span class="badge">${recipe.category}</span>
+                        <div style="margin-top: 8px;">${tagsHtml}</div>
+                    </div>
+                    <div class="recipe-details">
+                        <details>
+                            <summary>View Ingredients & Instructions</summary>
+                            <h4>Ingredients:</h4>
+                            <ul>${ingList}</ul>
+                            <h4>Instructions:</h4>
+                            <ol>${stepList}</ol>
+                        </details>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
 
         function filterRecipes() {
             const query = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.recipe-card').forEach(card => {
-                const title = card.getAttribute('data-title').toLowerCase();
-                const tags = card.getAttribute('data-tags').toLowerCase();
-                const text = card.innerText.toLowerCase();
-                if (title.includes(query) || tags.includes(query) || text.includes(query)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
+            const category = document.getElementById('category-filter').value;
+            const diet = document.getElementById('diet-filter').value;
+
+            const filtered = recipes.filter(recipe => {
+                const matchesSearch = recipe.name.toLowerCase().includes(query) || 
+                                     recipe.ingredients.some(i => i.toLowerCase().includes(query));
+                const matchesCategory = category === 'All' || recipe.category === category;
+                const matchesDiet = diet === 'All' || recipe.tags.includes(diet);
+
+                return matchesSearch && matchesCategory && matchesDiet;
             });
+
+            renderRecipes(filtered);
         }
     </script>
 </body>
